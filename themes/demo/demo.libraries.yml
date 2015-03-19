@@ -1,4 +1,4 @@
-formata.corescripts:
+demo.corescripts:
     version: 1.0
     js:
         js/jquery.scrollUp.min.js: {}

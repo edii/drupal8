@@ -1,7 +1,10 @@
-name: Demo
+name: demo
 type: theme
 description: Drupal 8+
 core: 8.x
+package: Custom
+base theme: bartik
+project: 'drupal'
 engine: twig
 screenshot: img/screenshot.png
 stylesheets:
@@ -9,8 +12,8 @@ stylesheets:
         - css/style.css
 # Remove a CSS file:
 stylesheets-remove:
-- normalize.css
-- system.theme.css
+    - normalize.css
+    - system.theme.css
 
 #Regions
 regions:
