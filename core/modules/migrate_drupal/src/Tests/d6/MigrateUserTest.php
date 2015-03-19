@@ -12,7 +12,6 @@ use Drupal\file\Entity\File;
 use Drupal\Core\Database\Database;
 use Drupal\migrate\MigrateExecutable;
 use Drupal\migrate_drupal\Tests\d6\MigrateDrupal6TestBase;
-use Drupal\user\RoleInterface;
 
 /**
  * Users migration.
@@ -150,7 +149,7 @@ class MigrateUserTest extends MigrateDrupal6TestBase {
         ->condition('ur.uid', $source->uid)
         ->execute()
         ->fetchCol();
-      $roles = array(RoleInterface::AUTHENTICATED_ID);
+      $roles = array(DRUPAL_AUTHENTICATED_RID);
       $migration_role = entity_load('migration', 'd6_user_role');
       foreach ($rids as $rid) {
         $role = $migration_role->getIdMap()->lookupDestinationId(array($rid));

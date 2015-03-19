@@ -74,7 +74,6 @@ abstract class AccountForm extends ContentEntityForm {
     $account = $this->entity;
     $user = $this->currentUser();
     $config = \Drupal::config('user.settings');
-    $form['#cache']['tags'] = $config->getCacheTags();
 
     $language_interface = \Drupal::languageManager()->getCurrentLanguage();
     $register = $account->isAnonymous();
@@ -221,7 +220,7 @@ abstract class AccountForm extends ContentEntityForm {
     );
 
     // Special handling for the inevitable "Authenticated user" role.
-    $form['account']['roles'][RoleInterface::AUTHENTICATED_ID] = array(
+    $form['account']['roles'][DRUPAL_AUTHENTICATED_RID] = array(
       '#default_value' => TRUE,
       '#disabled' => TRUE,
     );
@@ -345,7 +344,7 @@ abstract class AccountForm extends ContentEntityForm {
    *   The current state of the form.
    */
   public function syncUserLangcode($entity_type_id, UserInterface $user, array &$form, FormStateInterface &$form_state) {
-    $user->getUntranslated()->langcode = $user->preferred_langcode;
+    $user->langcode = $user->preferred_langcode;
   }
 
   /**
@@ -384,9 +383,10 @@ abstract class AccountForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function validate(array $form, FormStateInterface $form_state) {
-    /** @var \Drupal\user\UserInterface $account */
-    $account = parent::validate($form, $form_state);
+    parent::validate($form, $form_state);
 
+    /** @var \Drupal\user\UserInterface $account */
+    $account = $this->buildEntity($form, $form_state);
     // Customly trigger validation of manually added fields and add in
     // violations. This is necessary as entity form displays only invoke entity
     // validation for fields contained in the display.
@@ -406,8 +406,6 @@ abstract class AccountForm extends ContentEntityForm {
         $form_state->setErrorByName($field_name, $violation->getMessage());
       }
     }
-
-    return $account;
   }
 
   /**

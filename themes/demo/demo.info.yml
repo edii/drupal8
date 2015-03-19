@@ -1,0 +1,19 @@
+name: Demo
+type: theme
+description: Drupal 8+
+core: 8.x
+engine: twig
+screenshot: img/screenshot.png
+stylesheets:
+    all:
+        - css/style.css
+# Remove a CSS file:
+stylesheets-remove:
+- normalize.css
+- system.theme.css
+
+#Regions
+regions:
+    content: 'Content'
+    nav: 'Nav'
+    footer: 'Footer'

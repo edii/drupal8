@@ -9,7 +9,7 @@ label: Glossary
 module: node
 description: 'All content, by letter.'
 tag: default
-base_table: node_field_data
+base_table: node
 base_field: nid
 core: '8'
 display:
@@ -68,7 +68,8 @@ display:
           id: title
           table: node_field_data
           field: title
-          plugin_id: field
+          link_to_node: true
+          plugin_id: node
           relationship: none
           group_type: group
           admin_label: ''

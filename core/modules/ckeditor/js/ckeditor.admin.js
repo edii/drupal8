@@ -99,16 +99,17 @@
 
       // If dropped in a placeholder button group, the user must name it.
       if ($group.hasClass('placeholder')) {
-        if (view.isProcessing) {
-          return;
-        }
-        view.isProcessing = true;
 
-        Drupal.ckeditor.openGroupNameDialog(view, $group, callback);
+          if (view.isProcessing) {
+              return;
+          }
+          view.isProcessing = true;
+
+          Drupal.ckeditor.openGroupNameDialog(view, $group, callback);
       }
       else {
-        view.model.set('isDirty', true);
-        callback(true);
+          view.model.set('isDirty', true);
+          callback(true);
       }
     },
 

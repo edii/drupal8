@@ -476,5 +476,7 @@ class SchemaTest extends KernelTestBase {
         ->fetchField();
       $this->assertEqual($field_value, $field_spec['default'], 'Default value registered.');
     }
+
+    db_drop_field($table_name, $field_name);
   }
 }

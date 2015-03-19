@@ -7,7 +7,6 @@
 
 namespace Drupal\block\Tests;
 
-use Drupal\Component\Utility\String;
 use Drupal\Core\Form\FormState;
 use Drupal\simpletest\KernelTestBase;
 use Drupal\block\BlockInterface;
@@ -76,7 +75,7 @@ class BlockInterfaceTest extends KernelTestBase {
       'admin_label' => array(
         '#type' => 'item',
         '#title' => t('Block description'),
-        '#markup' => String::checkPlain($definition['admin_label']),
+        '#markup' => $definition['admin_label'],
       ),
       'label' => array(
         '#type' => 'textfield',

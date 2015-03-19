@@ -10,7 +10,6 @@ namespace Drupal\migrate_drupal\Tests\d6;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\migrate\MigrateExecutable;
 use Drupal\migrate_drupal\Tests\d6\MigrateDrupal6TestBase;
-use Drupal\node\Entity\NodeType;
 
 /**
  * Upgrade node types to node.type.*.yml.
@@ -47,7 +46,7 @@ class MigrateNodeTypeTest extends MigrateDrupal6TestBase {
   public function testNodeType() {
     $migration = entity_load('migration', 'd6_node_type');
     // Test the test_page content type.
-    $node_type_page = NodeType::load('test_page');
+    $node_type_page = entity_load('node_type', 'test_page');
     $this->assertIdentical($node_type_page->id(), 'test_page', 'Node type test_page loaded');
 
     $this->assertIdentical($node_type_page->displaySubmitted(), TRUE);
@@ -60,7 +59,7 @@ class MigrateNodeTypeTest extends MigrateDrupal6TestBase {
     $this->assertIdentical($field->getLabel(), 'This is the body field label', 'Body field was found.');
 
     // Test the test_story content type.
-    $node_type_story = NodeType::load('test_story');
+    $node_type_story = entity_load('node_type', 'test_story');
     $this->assertIdentical($node_type_story->id(), 'test_story', 'Node type test_story loaded');
 
     $this->assertIdentical($node_type_story->displaySubmitted(), TRUE);
@@ -73,7 +72,7 @@ class MigrateNodeTypeTest extends MigrateDrupal6TestBase {
     $this->assertIdentical($field, NULL, 'No body field found');
 
     // Test the test_event content type.
-    $node_type_event = NodeType::load('test_event');
+    $node_type_event = entity_load('node_type', 'test_event');
     $this->assertIdentical($node_type_event->id(), 'test_event', 'Node type test_event loaded');
 
     $this->assertIdentical($node_type_event->displaySubmitted(), TRUE);

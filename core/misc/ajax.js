@@ -372,7 +372,7 @@
     }
 
     // Prevent duplicate HTML ids in the returned markup.
-    // @see \Drupal\Component\Utility\Html::getUniqueId()
+    // @see drupal_html_id()
     var ids = document.querySelectorAll('[id]');
     var ajaxHtmlIds = [];
     for (var i = 0, il = ids.length; i < il; i++) {
@@ -436,7 +436,7 @@
     // interaction while the Ajax request is in progress. ajax.ajaxing prevents
     // the element from triggering a new request, but does not prevent the user
     // from changing its value.
-    $(this.element).prop('disabled', true);
+    $(this.element).addClass('progress-disabled').prop('disabled', true);
 
     // Insert progressbar or throbber.
     if (this.progress.type === 'bar') {
@@ -475,7 +475,7 @@
     if (this.progress.object) {
       this.progress.object.stopMonitoring();
     }
-    $(this.element).prop('disabled', false);
+    $(this.element).removeClass('progress-disabled').prop('disabled', false);
 
     for (var i in response) {
       if (response.hasOwnProperty(i) && response[i].command && this.commands[response[i].command]) {
@@ -538,7 +538,7 @@
     // Undo hide.
     $(this.wrapper).show();
     // Re-enable the element.
-    $(this.element).prop('disabled', false);
+    $(this.element).removeClass('progress-disabled').prop('disabled', false);
     // Reattach behaviors, if they were detached in beforeSerialize().
     if (this.$form) {
       var settings = response.settings || this.settings || drupalSettings;

@@ -28,15 +28,10 @@ class CacheContextsTest extends UnitTestCase {
 
     $new_keys = $cache_contexts->convertTokensToKeys([
       'foo',
-      'baz:parameterA',
-      'baz:parameterB',
+      'baz:parameter',
     ]);
 
-    $expected = [
-      'baz.cnenzrgreN',
-      'baz.cnenzrgreO',
-      'bar',
-    ];
+    $expected = ['bar', 'baz.cnenzrgre'];
     $this->assertEquals($expected, $new_keys);
   }
 

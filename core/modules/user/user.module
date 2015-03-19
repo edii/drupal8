@@ -1026,7 +1026,7 @@ function user_role_names($membersonly = FALSE, $permission = NULL) {
  */
 function user_user_role_insert(RoleInterface $role) {
   // Ignore the authenticated and anonymous roles or the role is being synced.
-  if (in_array($role->id(), array(RoleInterface::AUTHENTICATED_ID, RoleInterface::ANONYMOUS_ID)) || $role->isSyncing()) {
+  if (in_array($role->id(), array(DRUPAL_AUTHENTICATED_RID, DRUPAL_ANONYMOUS_RID)) || $role->isSyncing()) {
     return;
   }
 
@@ -1067,7 +1067,7 @@ function user_user_role_delete(RoleInterface $role) {
   $user_storage->deleteRoleReferences(array($role->id()));
 
   // Ignore the authenticated and anonymous roles or the role is being synced.
-  if (in_array($role->id(), array(RoleInterface::AUTHENTICATED_ID, RoleInterface::ANONYMOUS_ID)) || $role->isSyncing()) {
+  if (in_array($role->id(), array(DRUPAL_AUTHENTICATED_RID, DRUPAL_ANONYMOUS_RID)) || $role->isSyncing()) {
     return;
   }
 
@@ -1099,7 +1099,7 @@ function user_roles($membersonly = FALSE, $permission = NULL) {
   // Do not cache roles for specific permissions. This data is not requested
   // frequently enough to justify the additional memory use.
   if (empty($permission)) {
-    $cid = $membersonly ? RoleInterface::AUTHENTICATED_ID : RoleInterface::ANONYMOUS_ID;
+    $cid = $membersonly ? DRUPAL_AUTHENTICATED_RID : DRUPAL_ANONYMOUS_RID;
     if (isset($user_roles[$cid])) {
       return $user_roles[$cid];
     }
@@ -1107,7 +1107,7 @@ function user_roles($membersonly = FALSE, $permission = NULL) {
 
   $roles = Role::loadMultiple();
   if ($membersonly) {
-    unset($roles[RoleInterface::ANONYMOUS_ID]);
+    unset($roles[DRUPAL_ANONYMOUS_RID]);
   }
 
   if (!empty($permission)) {
@@ -1330,6 +1330,25 @@ function user_form_process_password_confirm($element) {
 }
 
 /**
+ * Implements hook_modules_installed().
+ */
+function user_modules_installed($modules) {
+  // Assign all available permissions to the administrator role.
+  $rid = \Drupal::config('user.settings')->get('admin_role');
+  if ($rid) {
+    // Some permissions call the url generator, so ensure that the routes are
+    // up to date.
+    \Drupal::service('router.builder_indicator')->setRebuildNeeded();
+    /** @var \Drupal\user\PermissionHandlerInterface $permission_handler */
+    $permission_handler = \Drupal::service('user.permissions');
+    $permissions = $permission_handler->getPermissions();
+    if (!empty($permissions)) {
+      user_role_grant_permissions($rid, array_keys($permissions));
+    }
+  }
+}
+
+/**
  * Implements hook_modules_uninstalled().
  */
 function user_modules_uninstalled($modules) {
@@ -1376,6 +1395,7 @@ function user_toolbar() {
       'account' => array(
         'title' => t('View profile'),
         'url' => Url::fromRoute('user.page'),
+        'html' => TRUE,
         'attributes' => array(
           'title' => t('User account'),
         ),
@@ -1383,6 +1403,7 @@ function user_toolbar() {
       'account_edit' => array(
         'title' => t('Edit profile'),
         'url' => Url::fromRoute('entity.user.edit_form', ['user' => $user->id()]),
+        'html' => TRUE,
         'attributes' => array(
           'title' => t('Edit user account'),
         ),

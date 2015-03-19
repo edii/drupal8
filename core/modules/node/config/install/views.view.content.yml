@@ -9,7 +9,7 @@ label: Content
 module: node
 description: 'Find and manage content.'
 tag: default
-base_table: node_field_data
+base_table: node
 base_field: nid
 core: 8.x
 display:
@@ -37,11 +37,6 @@ display:
         type: full
         options:
           items_per_page: 50
-          tags:
-            previous: '‹ previous'
-            next: 'next ›'
-            first: '« first'
-            last: 'last »'
       style:
         type: table
         options:
@@ -168,12 +163,10 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
+          link_to_node: true
+          plugin_id: node
           entity_type: node
           entity_field: title
-          type: string
-          settings:
-            link_to_entity: true
-          plugin_id: field
         type:
           id: type
           table: node_field_data
@@ -229,12 +222,11 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          type: boolean
-          settings:
-            format: custom
-            format_custom_true: 'Published'
-            format_custom_false: 'Unpublished'
-          plugin_id: field
+          type: published-notpublished
+          type_custom_true: ''
+          type_custom_false: ''
+          not: false
+          plugin_id: boolean
           entity_type: node
           entity_field: status
         changed:

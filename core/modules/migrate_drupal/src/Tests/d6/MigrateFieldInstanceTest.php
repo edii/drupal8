@@ -134,17 +134,12 @@ class MigrateFieldInstanceTest extends MigrateDrupal6TestBase {
       'display_field' => FALSE,
       'display_default' => FALSE,
       'uri_scheme' => 'public',
-      // This value should be 'default:file' but the test does not migrate field
-      // storages so we end up with the default value for this setting.
-      'handler' => 'default:node',
-      'handler_settings' => array(),
+      'handler' => 'default',
       'target_bundle' => NULL,
     );
-    $field_settings = $field->getSettings();
-    ksort($expected);
-    ksort($field_settings);
     // This is the only way to compare arrays.
-    $this->assertIdentical($expected, $field_settings);
+    $this->assertFalse(array_diff_assoc($field->getSettings(), $expected));
+    $this->assertFalse(array_diff_assoc($expected, $field->getSettings()));
 
     // Test a link field.
     $field = FieldConfig::load('node.story.field_test_link');

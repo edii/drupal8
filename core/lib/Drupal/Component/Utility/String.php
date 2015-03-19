@@ -74,25 +74,22 @@ class String {
    *   any key in $args are replaced with the corresponding value, after
    *   optional sanitization and formatting. The type of sanitization and
    *   formatting depends on the first character of the key:
-   *   - @variable: Escaped to HTML using
-   *     \Drupal\Component\Utility\SafeMarkup::escape(). Use this as the
+   *   - @variable: Escaped to HTML using String::checkPlain(). Use this as the
    *     default choice for anything displayed on a page on the site.
    *   - %variable: Escaped to HTML and formatted using String::placeholder(),
    *     which makes the following HTML code:
    *     @code
    *       <em class="placeholder">text output here.</em>
    *     @endcode
-   *   - !variable: Inserted as is, with no sanitization or formatting. Only
-   *     use this when the resulting string is being generated for one of:
-   *     - Non-HTML usage, such as a plain-text email.
-   *     - Non-direct HTML output, such as a plain-text variable that will be
-   *       printed as an HTML attribute value and therefore formatted with
-   *       String::checkPlain() as part of that.
-   *     - Some other special reason for suppressing sanitization.
+   *   - !variable: Inserted as is, with no sanitization or formatting. Only use
+   *     this for text that has already been prepared for HTML display (for
+   *     example, user-supplied text that has already been run through
+   *     String::checkPlain() previously, or is expected to contain some limited
+   *     HTML tags and has already been run through
+   *     \Drupal\Component\Utility\Xss::filter() previously).
    *
-   * @return string
-   *   The formatted string, which is marked as safe unless sanitization of an
-   *   unsafe argument was suppressed (see above).
+   * @return mixed
+   *   The formatted string, or FALSE if no args specified.
    *
    * @ingroup sanitization
    *
@@ -106,7 +103,7 @@ class String {
       switch ($key[0]) {
         case '@':
           // Escaped only.
-          $args[$key] = SafeMarkup::escape($value);
+          $args[$key] = static::checkPlain($value);
           break;
 
         case '%':
@@ -143,7 +140,7 @@ class String {
    *   The formatted text (html).
    */
   public static function placeholder($text) {
-    return SafeMarkup::set('<em class="placeholder">' . SafeMarkup::escape($text) . '</em>');
+    return SafeMarkup::set('<em class="placeholder">' . static::checkPlain($text) . '</em>');
   }
 
 

@@ -13,7 +13,6 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\user\RoleInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -30,6 +29,7 @@ use Drupal\user\UserInterface;
  *     "storage_schema" = "Drupal\user\UserStorageSchema",
  *     "access" = "Drupal\user\UserAccessControlHandler",
  *     "list_builder" = "Drupal\user\UserListBuilder",
+ *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "views_data" = "Drupal\user\UserViewsData",
  *     "route_provider" = {
  *       "html" = "Drupal\user\Entity\UserRouteProvider",
@@ -57,8 +57,7 @@ use Drupal\user\UserInterface;
  *     "cancel-form" = "/user/{user}/cancel",
  *     "collection" = "/admin/people",
  *   },
- *   field_ui_base_route = "entity.user.admin_form",
- *   common_reference_target = TRUE
+ *   field_ui_base_route = "entity.user.admin_form"
  * )
  */
 class User extends ContentEntityBase implements UserInterface {
@@ -85,7 +84,7 @@ class User extends ContentEntityBase implements UserInterface {
 
     // Make sure that the authenticated/anonymous roles are not persisted.
     foreach ($this->get('roles') as $index => $item) {
-      if (in_array($item->target_id, array(RoleInterface::ANONYMOUS_ID, RoleInterface::AUTHENTICATED_ID))) {
+      if (in_array($item->target_id, array(DRUPAL_ANONYMOUS_RID, DRUPAL_AUTHENTICATED_RID))) {
         $this->get('roles')->offsetUnset($index);
       }
     }
@@ -166,10 +165,10 @@ class User extends ContentEntityBase implements UserInterface {
     // Users with an ID always have the authenticated user role.
     if (!$exclude_locked_roles) {
       if ($this->isAuthenticated()) {
-        $roles[] = RoleInterface::AUTHENTICATED_ID;
+        $roles[] = DRUPAL_AUTHENTICATED_RID;
       }
       else {
-        $roles[] = RoleInterface::ANONYMOUS_ID;
+        $roles[] = DRUPAL_ANONYMOUS_RID;
       }
     }
 
@@ -225,7 +224,7 @@ class User extends ContentEntityBase implements UserInterface {
    */
   public function addRole($rid) {
 
-    if (in_array($rid, [RoleInterface::AUTHENTICATED_ID, RoleInterface::ANONYMOUS_ID])) {
+    if (in_array($rid, [DRUPAL_AUTHENTICATED_RID, DRUPAL_ANONYMOUS_RID])) {
       throw new \InvalidArgumentException('Anonymous or authenticated role ID must not be assigned manually.');
     }
 
@@ -476,8 +475,7 @@ class User extends ContentEntityBase implements UserInterface {
 
     $fields['langcode'] = BaseFieldDefinition::create('language')
       ->setLabel(t('Language code'))
-      ->setDescription(t('The user language code.'))
-      ->setTranslatable(TRUE);
+      ->setDescription(t('The user language code.'));
 
     $fields['preferred_langcode'] = BaseFieldDefinition::create('language')
       ->setLabel(t('Preferred language code'))

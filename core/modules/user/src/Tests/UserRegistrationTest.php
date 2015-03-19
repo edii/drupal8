@@ -44,9 +44,6 @@ class UserRegistrationTest extends WebTestBase {
     $accounts = entity_load_multiple_by_properties('user', array('name' => $name, 'mail' => $mail));
     $new_user = reset($accounts);
     $this->assertTrue($new_user->isActive(), 'New account is active after registration.');
-    $resetURL = user_pass_reset_url($new_user);
-    $this->drupalGet($resetURL);
-    $this->assertTitle(t('Set password | Drupal'), 'Page title is "Set password".');
 
     // Allow registration by site visitors, but require administrator approval.
     $config->set('register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL)->save();
@@ -168,9 +165,6 @@ class UserRegistrationTest extends WebTestBase {
     // as a details element if there is not more than one details in the form.
     $this->drupalGet('user/register');
     $this->assertNoRaw('<details id="edit-account"><summary>Account information</summary>');
-
-    // Check the presence of expected cache tags.
-    $this->assertCacheTag('config:user.settings');
 
     $edit = array();
     $edit['name'] = $name = $this->randomMachineName();

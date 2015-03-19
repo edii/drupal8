@@ -7,7 +7,6 @@
 
 namespace Drupal\comment;
 
-use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityViewBuilder;
@@ -103,9 +102,7 @@ class CommentViewBuilder extends EntityViewBuilder {
       }
 
       $account = comment_prepare_author($entity);
-      $config = \Drupal::config('user.settings');
-      $build['#cache']['tags'] = Cache::mergeTags(isset($build['#cache']['tags']) ? $build['#cache']['tags'] : [],  $config->getCacheTags());
-      if ($config->get('signatures') && $account->getSignature()) {
+      if (\Drupal::config('user.settings')->get('signatures') && $account->getSignature()) {
         $build[$id]['signature'] = array(
           '#type' => 'processed_text',
           '#text' => $account->getSignature(),

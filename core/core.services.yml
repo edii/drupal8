@@ -19,11 +19,6 @@ services:
     arguments: ['@request_stack']
     tags:
       - { name: cache.context}
-  cache_context.pager:
-    class: Drupal\Core\Cache\PagerCacheContext
-    arguments: ['@request_stack']
-    tags:
-      - { name: cache.context}
   cache_context.language:
     class: Drupal\Core\Cache\LanguageCacheContext
     arguments: ['@language_manager']
@@ -138,11 +133,6 @@ services:
     lazy: true
   page_cache_kill_switch:
     class: Drupal\Core\PageCache\ResponsePolicy\KillSwitch
-    tags:
-      - { name: page_cache_response_policy }
-  page_cache_no_server_error:
-    class: Drupal\Core\PageCache\ResponsePolicy\NoServerError
-    public: false
     tags:
       - { name: page_cache_response_policy }
   config.manager:
@@ -348,7 +338,7 @@ services:
     arguments: ['@entity.manager', '@string_translation']
   theme_handler:
     class: Drupal\Core\Extension\ThemeHandler
-    arguments: ['@app.root', '@config.factory', '@module_handler', '@state', '@info_parser', '@logger.channel.default', '@asset.css.collection_optimizer', '@config.installer', '@config.manager', '@router.builder']
+    arguments: ['@app.root', '@config.factory', '@module_handler', '@state', '@info_parser', '@logger.channel.default', '@asset.css.collection_optimizer', '@config.installer', '@config.manager', '@router.builder_indicator']
   entity.manager:
     class: Drupal\Core\Entity\EntityManager
     arguments: ['@container.namespaces', '@module_handler', '@cache.discovery', '@language_manager', '@string_translation', '@class_resolver', '@typed_data_manager', '@entity.definitions.installed', '@event_dispatcher']
@@ -387,7 +377,7 @@ services:
     parent: default_plugin_manager
   plugin.manager.field.field_type:
     class: Drupal\Core\Field\FieldTypePluginManager
-    arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@typed_data_manager']
+    arguments: ['@container.namespaces', '@cache.discovery', '@module_handler']
   plugin.manager.field.widget:
     class: Drupal\Core\Field\WidgetPluginManager
     arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@plugin.manager.field.field_type']
@@ -558,7 +548,7 @@ services:
     arguments: ['@current_route_match']
   router.route_provider:
     class: Drupal\Core\Routing\RouteProvider
-    arguments: ['@database', '@state', '@path.current']
+    arguments: ['@database', '@router.builder', '@state', '@path.current']
     tags:
       - { name: event_subscriber }
       - { name: backend_overridable }
@@ -592,9 +582,6 @@ services:
     arguments: ['@router.route_provider', '@path_processor_manager', '@route_processor_manager', '@config.factory', '@logger.channel.default', '@request_stack']
     calls:
       - [setContext, ['@?router.request_context']]
-  redirect.destination:
-    class: Drupal\Core\Routing\RedirectDestination
-    arguments: ['@request_stack', '@url_generator']
   unrouted_url_assembler:
     class: Drupal\Core\Utility\UnroutedUrlAssembler
     arguments: ['@request_stack', '@config.factory', '@path_processor_manager']
@@ -640,11 +627,17 @@ services:
     arguments: ['@database', '@state']
     tags:
       - { name: backend_overridable }
+  router.builder_indicator:
+    class: Drupal\Core\Routing\RouteBuilderIndicator
+    arguments: ['@state']
   router.builder:
     class: Drupal\Core\Routing\RouteBuilder
-    arguments: ['@router.dumper', '@lock', '@event_dispatcher', '@module_handler', '@controller_resolver', '@access_manager.check_provider']
+    arguments: ['@router.dumper', '@lock', '@event_dispatcher', '@module_handler', '@controller_resolver', '@access_manager.check_provider', '@router.builder_indicator']
+  router.rebuild_subscriber:
+    class: Drupal\Core\EventSubscriber\RouterRebuildSubscriber
+    arguments: ['@router.builder']
     tags:
-      - { name: needs_destruction }
+      - { name: event_subscriber }
   menu.rebuild_subscriber:
     class: Drupal\Core\EventSubscriber\MenuRouterRebuildSubscriber
     arguments: ['@lock', '@plugin.manager.menu.link']
@@ -772,7 +765,6 @@ services:
     arguments: ['@element_info']
     tags:
       - { name: render.main_content_renderer, format: drupal_ajax }
-      - { name: render.main_content_renderer, format: iframeupload }
   main_content_renderer.dialog:
     class: Drupal\Core\Render\MainContent\DialogRenderer
     arguments: ['@title_resolver']
@@ -978,7 +970,7 @@ services:
     parent: default_plugin_manager
   plugin.manager.element_info:
     class: Drupal\Core\Render\ElementInfoManager
-    arguments: ['@container.namespaces', '@cache.discovery', '@cache_tags.invalidator', '@module_handler', '@theme.manager']
+    parent: default_plugin_manager
   stream_wrapper_manager:
     class: Drupal\Core\StreamWrapper\StreamWrapperManager
     calls:
@@ -1091,9 +1083,7 @@ services:
     class: Zend\Feed\Writer\Extension\WellFormedWeb\Renderer\Entry
   theme.manager:
     class: Drupal\Core\Theme\ThemeManager
-    arguments: ['@app.root', '@theme.negotiator', '@theme.initialization', '@request_stack', '@module_handler']
-    calls:
-      - [setThemeRegistry, ['@theme.registry']]
+    arguments: ['@app.root', '@theme.registry', '@theme.negotiator', '@theme.initialization', '@request_stack', '@module_handler']
   theme.initialization:
     class: Drupal\Core\Theme\ThemeInitialization
     arguments: ['@app.root', '@theme_handler', '@state']
@@ -1102,8 +1092,6 @@ services:
     arguments: ['@app.root', '@cache.default', '@lock', '@module_handler', '@theme_handler', '@theme.initialization']
     tags:
       - { name: needs_destruction }
-    calls:
-      - [setThemeManager, ['@theme.manager']]
   authentication:
     class: Drupal\Core\Authentication\AuthenticationManager
     tags:
@@ -1233,7 +1221,7 @@ services:
     tags:
       - { name: twig.loader, priority: 0 }
   twig.loader.string:
-    class: Drupal\Core\Template\Loader\StringLoader
+    class: Twig_Loader_String
     tags:
       - { name: twig.loader, priority: -100 }
   element_info:
