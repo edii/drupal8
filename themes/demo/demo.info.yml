@@ -3,13 +3,13 @@ type: theme
 description: Drupal 8+
 core: 8.x
 package: Custom
-base theme: bartik
 project: 'drupal'
 engine: twig
 screenshot: img/screenshot.png
-stylesheets:
-    all:
-        - css/style.css
+
+libraries:
+  - demo/base
+
 # Remove a CSS file:
 stylesheets-remove:
     - normalize.css
@@ -17,6 +17,9 @@ stylesheets-remove:
 
 #Regions
 regions:
+    header: Header
+    primary_menu: 'Primary menu'
+    secondary_menu: 'Secondary menu'
     content: 'Content'
     nav: 'Nav'
     footer: 'Footer'

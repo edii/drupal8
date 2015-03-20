@@ -94,10 +94,14 @@ class AssetResolver implements AssetResolverInterface {
     $theme_info = $this->themeManager->getActiveTheme();
 
     $css = [];
-
+    
+    
     foreach ($this->getLibrariesToLoad($assets) as $library) {
       list($extension, $name) = explode('/', $library, 2);
       $definition = $this->libraryDiscovery->getLibraryByName($extension, $name);
+      
+      
+      
       if (isset($definition['css'])) {
         foreach ($definition['css'] as $options) {
           $options += array(
@@ -144,6 +148,8 @@ class AssetResolver implements AssetResolverInterface {
       }
     }
 
+    
+    
     // Allow modules and themes to alter the CSS assets.
     $this->moduleHandler->alter('css', $css, $assets);
     $this->themeManager->alter('css', $css, $assets);

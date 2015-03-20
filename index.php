@@ -22,11 +22,15 @@ try {
 
   $request = Request::createFromGlobals();
   $kernel = DrupalKernel::createFromRequest($request, $autoloader, 'prod');
+  //die('stop');
   $response = $kernel
       ->handle($request)
       // Handle the response object.
       ->prepare($request)->send();
+  
+  
   $kernel->terminate($request, $response);
+  
 }
 catch (HttpExceptionInterface $e) {
   $response = new Response($e->getMessage(), $e->getStatusCode());

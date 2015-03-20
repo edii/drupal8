@@ -216,6 +216,8 @@ function drupal_find_theme_templates($cache, $extension, $path) {
     }
   }
   $theme = \Drupal::theme()->getActiveTheme()->getName();
+  
+  
   $subtheme_paths = isset($theme_paths[$theme]) ? $theme_paths[$theme] : array();
 
   // Escape the periods in the extension.
@@ -1382,7 +1384,7 @@ function template_preprocess_html(&$variables) {
   $js_collection_renderer = \Drupal::service('asset.js.collection_renderer');
   $variables['scripts'] = $js_collection_renderer->render($js_assets_header);
   $variables['scripts_bottom'] = $js_collection_renderer->render($js_assets_footer);
-
+  
   // Handle all non-asset attachments.
   drupal_process_attached($all_attached);
   $variables['head'] = drupal_get_html_head(FALSE);

@@ -67,11 +67,12 @@ class YamlFileLoader
      */
     public function load($file)
     {
+        
         if (!isset(static::$yaml[$file])) {
           static::$yaml[$file] = $this->loadFile($file);
         }
         $content = static::$yaml[$file];
-
+   
         // Not supported.
         //$this->container->addResource(new FileResource($path));
 
